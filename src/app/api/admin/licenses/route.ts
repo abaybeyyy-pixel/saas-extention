@@ -134,7 +134,8 @@ export async function PUT(request: NextRequest) {
             .update({
                 email: email.trim().toLowerCase(),
                 plan,
-                device_limit: deviceLimit
+                device_limit: deviceLimit,
+                is_active: true // Auto reactivate on edit
             })
             .eq('id', id)
             .select()
