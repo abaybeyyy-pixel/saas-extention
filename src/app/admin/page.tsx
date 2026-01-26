@@ -134,11 +134,19 @@ export default function AdminPage() {
     };
 
     const handleRevoke = async (id: string, email: string) => {
-        if (!confirm(`Are you sure you want to revoke access for ${email}?`)) return;
+        if (!confirm(`Are you sure you want to REVOKE access for ${email}? User will be logged out immediately.`)) return;
         try {
             await fetch(`/api/admin/licenses?id=${id}`, { method: 'DELETE', credentials: 'include' });
             fetchLicenses();
         } catch { alert('Failed to revoke'); }
+    };
+
+    const handleDelete = async (id: string, email: string) => {
+        if (!confirm(`⚠️ PERMANENT DELETE WARNING ⚠️\n\nAre you sure you want to DELETE user ${email}?\nThis action cannot be undone and will remove all history.`)) return;
+        try {
+            await fetch(`/api/admin/licenses?id=${id}&permanent=true`, { method: 'DELETE', credentials: 'include' });
+            fetchLicenses();
+        } catch { alert('Failed to delete'); }
     };
 
     const handleForceLogout = async (sessionId: string) => {
@@ -294,8 +302,8 @@ export default function AdminPage() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border ${license.plan === 'AGENCY' ? 'bg-purple-50 text-purple-700 border-purple-200' :
-                                                        license.plan === 'PRO' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                                                            'bg-slate-100 text-slate-600 border-slate-200'
+                                                    license.plan === 'PRO' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                                        'bg-slate-100 text-slate-600 border-slate-200'
                                                     }`}>
                                                     {license.plan}
                                                 </span>
@@ -354,16 +362,21 @@ export default function AdminPage() {
                                                     {active ? (
                                                         <button
                                                             onClick={() => handleRevoke(license.id, license.email)}
-                                                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                            title="Revoke & Kick"
+                                                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition"
+                                                            title="Revoke Access (Soft Delete)"
                                                         >
                                                             <ShieldAlert size={16} />
                                                         </button>
                                                     ) : (
-                                                        <button disabled className="p-2 text-slate-200 cursor-not-allowed">
-                                                            <ShieldAlert size={16} />
-                                                        </button>
+                                                        <div className="w-8"></div>
                                                     )}
+                                                    <button
+                                                        onClick={() => handleDelete(license.id, license.email)}
+                                                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                        title="Delete Permanently"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -415,8 +428,8 @@ export default function AdminPage() {
                                             key={key}
                                             onClick={() => setFormData({ ...formData, plan: key as PlanType })}
                                             className={`cursor-pointer p-3 rounded-xl border flex items-center justify-between transition-all ${formData.plan === key
-                                                    ? 'border-blue-500 bg-blue-50'
-                                                    : 'border-slate-200 hover:border-slate-300'
+                                                ? 'border-blue-500 bg-blue-50'
+                                                : 'border-slate-200 hover:border-slate-300'
                                                 }`}
                                         >
                                             <div>

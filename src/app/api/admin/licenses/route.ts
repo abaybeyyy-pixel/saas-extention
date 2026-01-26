@@ -160,7 +160,7 @@ export async function PUT(request: NextRequest) {
     }
 }
 
-// DELETE - Revoke license (Soft Delete / Deactivate)
+// DELETE - Revoke license (Soft Delete) or Permanent Delete
 export async function DELETE(request: NextRequest) {
     if (!await verifyAdmin(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -169,6 +169,7 @@ export async function DELETE(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const licenseId = searchParams.get('id');
+        const permanent = searchParams.get('permanent') === 'true';
 
         if (!licenseId) {
             return NextResponse.json(
@@ -177,33 +178,51 @@ export async function DELETE(request: NextRequest) {
             );
         }
 
-        // Deactivate license
-        const { error: updateError } = await supabaseAdmin
-            .from('licenses')
-            .update({ is_active: false })
-            .eq('id', licenseId);
+        if (permanent) {
+            // Hard Delete (Remove from DB)
+            // First delete sessions (cascade usually handles this but safety first)
+            await supabaseAdmin.from('sessions').delete().eq('license_id', licenseId);
 
-        if (updateError) throw updateError;
+            // Delete usages
+            await supabaseAdmin.from('usages').delete().eq('license_id', licenseId);
 
-        // Delete all sessions for this license (instant revoke)
-        await supabaseAdmin
-            .from('sessions')
-            .delete()
-            .eq('license_id', licenseId);
+            // Delete license
+            const { error: deleteError } = await supabaseAdmin
+                .from('licenses')
+                .delete()
+                .eq('id', licenseId);
 
-        // Log revocation
-        await supabaseAdmin.from('usages').insert({
-            license_id: licenseId,
-            action: 'revoked',
-            metadata: { revoked_by: 'admin' }
-        });
+            if (deleteError) throw deleteError;
+
+        } else {
+            // Soft Delete (Revoke/Deactivate)
+            const { error: updateError } = await supabaseAdmin
+                .from('licenses')
+                .update({ is_active: false })
+                .eq('id', licenseId);
+
+            if (updateError) throw updateError;
+
+            // Delete all sessions for immediate logout
+            await supabaseAdmin
+                .from('sessions')
+                .delete()
+                .eq('license_id', licenseId);
+
+            // Log revocation
+            await supabaseAdmin.from('usages').insert({
+                license_id: licenseId,
+                action: 'revoked',
+                metadata: { revoked_by: 'admin' }
+            });
+        }
 
         return NextResponse.json({ success: true });
 
     } catch (error) {
-        console.error('Revoke License Error:', error);
+        console.error('Delete License Error:', error);
         return NextResponse.json(
-            { success: false, error: 'Failed to revoke license' },
+            { success: false, error: 'Failed to delete license' },
             { status: 500 }
         );
     }
