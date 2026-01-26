@@ -167,40 +167,41 @@ export default function AdminPage() {
     // Login Screen
     if (!isAuthenticated) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
-                <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 w-full max-w-md border border-white/20">
+            <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
+                <div className="bg-white rounded-2xl p-8 w-full max-w-md border border-slate-200 shadow-xl shadow-slate-200/50">
                     <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-white mb-2">🔐 Leadify Admin</h1>
-                        <p className="text-slate-400">License Management System</p>
+                        <div className="inline-flex p-3 rounded-xl bg-blue-50 text-blue-600 mb-4 text-2xl">🔐</div>
+                        <h1 className="text-2xl font-bold text-slate-900 mb-2">Admin Access</h1>
+                        <p className="text-slate-500 text-sm">Please authenticate to continue</p>
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                                 Admin Secret
                             </label>
                             <input
                                 type="password"
                                 value={secret}
                                 onChange={(e) => setSecret(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Enter admin secret..."
+                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+                                placeholder="Enter secret key..."
                                 required
                             />
                         </div>
 
                         {error && (
-                            <div className="text-red-400 text-sm bg-red-500/10 p-3 rounded-lg">
-                                {error}
+                            <div className="text-red-600 text-sm bg-red-50 p-3 rounded-xl flex items-center gap-2">
+                                <span>⚠️</span> {error}
                             </div>
                         )}
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-white font-semibold hover:opacity-90 transition disabled:opacity-50"
+                            className="w-full py-3 bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800 transition disabled:opacity-50 shadow-lg shadow-slate-900/10"
                         >
-                            {loading ? 'Authenticating...' : 'Login'}
+                            {loading ? 'Verifying...' : 'Login to Dashboard'}
                         </button>
                     </form>
                 </div>
@@ -210,136 +211,137 @@ export default function AdminPage() {
 
     // Dashboard
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-6">
-            {/* Header */}
-            <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
+        <div className="min-h-screen bg-slate-50 p-6 font-sans text-slate-900">
+            <div className="max-w-7xl mx-auto space-y-8">
+
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-white">📋 License Dashboard</h1>
-                        <p className="text-slate-400 text-sm">Manage Leadify licenses & sessions</p>
+                        <h1 className="text-2xl font-bold text-slate-900">License Dashboard</h1>
+                        <p className="text-slate-500 text-sm">Overview of all active and inactive licenses</p>
                     </div>
                     <button
                         onClick={() => setShowModal(true)}
-                        className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl text-white font-semibold hover:opacity-90 transition flex items-center gap-2"
+                        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-lg shadow-blue-600/20 transition flex items-center gap-2 text-sm"
                     >
-                        <span>➕</span> Generate License
+                        <span>✨</span> New License
                     </button>
                 </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                    <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/10">
-                        <div className="text-3xl font-bold text-white">{licenses.length}</div>
-                        <div className="text-slate-400 text-sm">Total Licenses</div>
-                    </div>
-                    <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/10">
-                        <div className="text-3xl font-bold text-green-400">
-                            {licenses.filter(l => l.is_active && !isExpired(l.expires_at)).length}
-                        </div>
-                        <div className="text-slate-400 text-sm">Active</div>
-                    </div>
-                    <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/10">
-                        <div className="text-3xl font-bold text-yellow-400">
-                            {licenses.filter(l => isExpired(l.expires_at)).length}
-                        </div>
-                        <div className="text-slate-400 text-sm">Expired</div>
-                    </div>
-                    <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/10">
-                        <div className="text-3xl font-bold text-blue-400">
-                            {licenses.reduce((sum, l) => sum + (l.sessions?.length || 0), 0)}
-                        </div>
-                        <div className="text-slate-400 text-sm">Active Sessions</div>
-                    </div>
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <StatCard
+                        label="Total Licenses"
+                        value={licenses.length}
+                        icon="📦"
+                        bg="bg-white"
+                    />
+                    <StatCard
+                        label="Active Licenses"
+                        value={licenses.filter(l => l.is_active && !isExpired(l.expires_at)).length}
+                        icon="✅"
+                        color="text-emerald-600"
+                        bg="bg-white"
+                    />
+                    <StatCard
+                        label="Expired"
+                        value={licenses.filter(l => isExpired(l.expires_at)).length}
+                        icon="⚠️"
+                        color="text-amber-500"
+                        bg="bg-white"
+                    />
+                    <StatCard
+                        label="Active Sessions"
+                        value={licenses.reduce((sum, l) => sum + (l.sessions?.length || 0), 0)}
+                        icon="🔵"
+                        color="text-blue-600"
+                        bg="bg-white"
+                    />
                 </div>
 
                 {/* Licenses Table */}
-                <div className="bg-white/10 backdrop-blur rounded-2xl border border-white/10 overflow-hidden">
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-white/5">
-                                <tr className="text-left text-slate-400 text-sm">
-                                    <th className="px-4 py-3">Email</th>
-                                    <th className="px-4 py-3">License Key</th>
-                                    <th className="px-4 py-3">Plan</th>
-                                    <th className="px-4 py-3">Expires</th>
-                                    <th className="px-4 py-3">Status</th>
-                                    <th className="px-4 py-3">Sessions</th>
-                                    <th className="px-4 py-3">Actions</th>
+                        <table className="w-full text-left">
+                            <thead className="bg-slate-50/50 border-b border-slate-100">
+                                <tr className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                                    <th className="px-6 py-4">Customer</th>
+                                    <th className="px-6 py-4">License Key</th>
+                                    <th className="px-6 py-4">Plan</th>
+                                    <th className="px-6 py-4">Expiry</th>
+                                    <th className="px-6 py-4">Status</th>
+                                    <th className="px-6 py-4">Sessions</th>
+                                    <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5">
+                            <tbody className="divide-y divide-slate-100">
                                 {licenses.map((license) => (
-                                    <tr key={license.id} className="text-white hover:bg-white/5">
-                                        <td className="px-4 py-3 text-sm">{license.email}</td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2">
-                                                <code className="text-xs bg-slate-800 px-2 py-1 rounded font-mono">
-                                                    {license.license_key.substring(0, 20)}...
-                                                </code>
-                                                <button
-                                                    onClick={() => copyKey(license.license_key)}
-                                                    className="text-blue-400 hover:text-blue-300 text-sm"
-                                                >
-                                                    📋
-                                                </button>
-                                            </div>
+                                    <tr key={license.id} className="hover:bg-slate-50/50 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium text-slate-900">{license.email}</div>
+                                            <div className="text-xs text-slate-400 mt-0.5">ID: {license.id.slice(0, 8)}</div>
                                         </td>
-                                        <td className="px-4 py-3">
-                                            <span className={`px-2 py-1 rounded text-xs font-bold ${license.plan === 'AGENCY' ? 'bg-purple-500/20 text-purple-300' :
-                                                    license.plan === 'PRO' ? 'bg-blue-500/20 text-blue-300' :
-                                                        'bg-slate-500/20 text-slate-300'
+                                        <td className="px-6 py-4">
+                                            <button
+                                                onClick={() => copyKey(license.license_key)}
+                                                className="group flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-md transition"
+                                            >
+                                                <code className="text-xs font-mono text-slate-600 group-hover:text-slate-900">
+                                                    {license.license_key.substring(0, 16)}...
+                                                </code>
+                                                <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity">📋</span>
+                                            </button>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${license.plan === 'AGENCY' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                                                    license.plan === 'PRO' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                                        'bg-slate-100 text-slate-600 border-slate-200'
                                                 }`}>
                                                 {license.plan}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3 text-sm text-slate-300">
-                                            {formatDate(license.expires_at)}
+                                        <td className="px-6 py-4">
+                                            <div className={`text-sm font-medium ${isExpired(license.expires_at) ? 'text-red-600' : 'text-slate-600'}`}>
+                                                {formatDate(license.expires_at)}
+                                            </div>
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-6 py-4">
                                             {!license.is_active ? (
-                                                <span className="px-2 py-1 rounded text-xs font-bold bg-red-500/20 text-red-300">
-                                                    REVOKED
-                                                </span>
+                                                <Badge color="red">Revoked</Badge>
                                             ) : isExpired(license.expires_at) ? (
-                                                <span className="px-2 py-1 rounded text-xs font-bold bg-yellow-500/20 text-yellow-300">
-                                                    EXPIRED
-                                                </span>
+                                                <Badge color="amber">Expired</Badge>
                                             ) : (
-                                                <span className="px-2 py-1 rounded text-xs font-bold bg-green-500/20 text-green-300">
-                                                    ACTIVE
-                                                </span>
+                                                <Badge color="emerald">Active</Badge>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3">
-                                            <div className="space-y-1">
+                                        <td className="px-6 py-4">
+                                            <div className="space-y-2">
                                                 {license.sessions && license.sessions.length > 0 ? (
                                                     license.sessions.map((session) => (
-                                                        <div key={session.id} className="flex items-center gap-2 text-xs">
-                                                            <span className="text-slate-400">
-                                                                🖥️ {session.device_fingerprint.substring(0, 8)}...
-                                                            </span>
-                                                            <span className="text-slate-500">
-                                                                {session.ip_address}
+                                                        <div key={session.id} className="flex items-center gap-2 text-xs bg-slate-50 p-1.5 rounded border border-slate-100 w-fit">
+                                                            <span className="text-slate-500">🖥️</span>
+                                                            <span className="font-mono text-slate-600" title={session.device_fingerprint}>
+                                                                {session.device_fingerprint.substring(4, 12)}
                                                             </span>
                                                             <button
                                                                 onClick={() => handleForceLogout(session.id)}
-                                                                className="text-red-400 hover:text-red-300"
+                                                                className="ml-1 text-slate-400 hover:text-red-500 transition"
                                                                 title="Force logout"
                                                             >
-                                                                ❌
+                                                                ✕
                                                             </button>
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <span className="text-slate-500 text-xs">No active sessions</span>
+                                                    <span className="text-slate-400 text-xs italic">No sessions</span>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-6 py-4 text-right">
                                             {license.is_active && (
                                                 <button
                                                     onClick={() => handleRevoke(license.id, license.email)}
-                                                    className="px-3 py-1 bg-red-500/20 text-red-300 rounded text-xs hover:bg-red-500/30 transition"
+                                                    className="text-xs font-medium text-slate-400 hover:text-red-600 transition"
                                                 >
                                                     Revoke
                                                 </button>
@@ -351,8 +353,10 @@ export default function AdminPage() {
                         </table>
 
                         {licenses.length === 0 && (
-                            <div className="text-center py-12 text-slate-400">
-                                No licenses yet. Click &quot;Generate License&quot; to create one.
+                            <div className="text-center py-12">
+                                <div className="text-4xl mb-3">📭</div>
+                                <h3 className="text-slate-900 font-medium">No licenses found</h3>
+                                <p className="text-slate-500 text-sm mt-1">Get started by creating a new license.</p>
                             </div>
                         )}
                     </div>
@@ -361,63 +365,123 @@ export default function AdminPage() {
 
             {/* Create Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <div className="bg-slate-800 rounded-2xl p-6 w-full max-w-md border border-slate-700">
-                        <h2 className="text-xl font-bold text-white mb-4">Generate New License</h2>
+                <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-md border border-slate-200 shadow-2xl">
+                        <h2 className="text-lg font-bold text-slate-900 mb-1">New License</h2>
+                        <p className="text-slate-500 text-sm mb-6">Create a new license key for a customer.</p>
 
                         <form onSubmit={handleCreate} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">
+                                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                                     Customer Email
                                 </label>
                                 <input
                                     type="email"
                                     value={newEmail}
                                     onChange={(e) => setNewEmail(e.target.value)}
-                                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                     placeholder="customer@email.com"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">
-                                    Plan
+                                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                                    Subscription Plan
                                 </label>
-                                <select
-                                    value={newPlan}
-                                    onChange={(e) => setNewPlan(e.target.value as PlanType)}
-                                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="TRIAL">TRIAL (1 Hari - FREE)</option>
-                                    <option value="PRO">PRO (30 Hari - Rp 99.000)</option>
-                                    <option value="AGENCY">AGENCY (365 Hari - Rp 799.000)</option>
-                                </select>
-                                <p className="text-slate-400 text-xs mt-2">
-                                    Device limit: {PLAN_CONFIG[newPlan].deviceLimit} device(s)
-                                </p>
+                                <div className="grid grid-cols-1 gap-3">
+                                    <PlanOption
+                                        value="TRIAL"
+                                        selected={newPlan}
+                                        onClick={setNewPlan}
+                                        label="Trial (1 Day)"
+                                        sub="Free • 1 Device"
+                                    />
+                                    <PlanOption
+                                        value="PRO"
+                                        selected={newPlan}
+                                        onClick={setNewPlan}
+                                        label="Pro (30 Days)"
+                                        sub="IDR 99k • 1 Device"
+                                    />
+                                    <PlanOption
+                                        value="AGENCY"
+                                        selected={newPlan}
+                                        onClick={setNewPlan}
+                                        label="Agency (1 Year)"
+                                        sub="IDR 799k • 3 Devices"
+                                    />
+                                </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4">
+                            <div className="flex gap-3 pt-6">
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="flex-1 py-3 bg-slate-700 rounded-xl text-white hover:bg-slate-600 transition"
+                                    className="flex-1 py-2.5 bg-slate-100 text-slate-600 font-medium rounded-xl hover:bg-slate-200 transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={creating}
-                                    className="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl text-white font-semibold hover:opacity-90 transition disabled:opacity-50"
+                                    className="flex-1 py-2.5 bg-slate-900 text-white font-medium rounded-xl hover:bg-slate-800 transition disabled:opacity-50"
                                 >
-                                    {creating ? 'Creating...' : 'Generate'}
+                                    {creating ? 'Creating...' : 'Generate Key'}
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
+        </div>
+    );
+}
+
+// UI Components to keep code clean
+
+function StatCard({ label, value, icon, color = 'text-slate-900', bg = 'bg-white' }: { label: string, value: number, icon: string, color?: string, bg?: string }) {
+    return (
+        <div className={`${bg} p-5 rounded-xl border border-slate-200 shadow-sm`}>
+            <div className="flex items-center justify-between mb-4">
+                <span className="text-slate-500 text-sm font-medium">{label}</span>
+                <span className="text-xl">{icon}</span>
+            </div>
+            <div className={`text-3xl font-bold ${color}`}>{value}</div>
+        </div>
+    );
+}
+
+function Badge({ children, color }: { children: React.ReactNode, color: 'emerald' | 'amber' | 'red' }) {
+    const styles = {
+        emerald: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        amber: 'bg-amber-50 text-amber-700 border-amber-200',
+        red: 'bg-red-50 text-red-700 border-red-200',
+    };
+    return (
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${styles[color]}`}>
+            <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${color === 'emerald' ? 'bg-emerald-500' : color === 'amber' ? 'bg-amber-500' : 'bg-red-500'}`}></span>
+            {children}
+        </span>
+    );
+}
+
+function PlanOption({ value, selected, onClick, label, sub }: { value: PlanType, selected: PlanType, onClick: (p: PlanType) => void, label: string, sub: string }) {
+    return (
+        <div
+            onClick={() => onClick(value)}
+            className={`cursor-pointer p-3 rounded-xl border-2 transition-all ${selected === value
+                    ? 'border-blue-500 bg-blue-50/50'
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                }`}
+        >
+            <div className="flex items-center justify-between">
+                <div>
+                    <div className={`font-semibold text-sm ${selected === value ? 'text-blue-700' : 'text-slate-700'}`}>{label}</div>
+                    <div className="text-xs text-slate-500">{sub}</div>
+                </div>
+                {selected === value && <div className="text-blue-500">✓</div>}
+            </div>
         </div>
     );
 }
