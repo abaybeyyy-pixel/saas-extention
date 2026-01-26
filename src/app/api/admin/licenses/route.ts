@@ -104,7 +104,63 @@ export async function POST(request: NextRequest) {
     }
 }
 
-// DELETE - Revoke license
+// PUT - Update license
+export async function PUT(request: NextRequest) {
+    if (!await verifyAdmin(request)) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    try {
+        const body = await request.json();
+        const { id, email, plan } = body;
+
+        if (!id || !email || !plan) {
+            return NextResponse.json(
+                { error: 'ID, Email and Plan are required' },
+                { status: 400 }
+            );
+        }
+
+        // Recalculate expiry IF plan changed (optional logic, simplifed for now: just update plan display)
+        // Real implementation might want to extend expiry or keep it. 
+        // Here we update email, plan, and device limit based on new plan config.
+        const deviceLimit = PLAN_CONFIG[plan as PlanType].deviceLimit;
+
+        // Check if we also need to extend expiry? For now lets assume "Edit" is correcting data, not extending.
+        // To extend, we would need a separate "Extend" action.
+
+        const { data: license, error } = await supabaseAdmin
+            .from('licenses')
+            .update({
+                email: email.trim().toLowerCase(),
+                plan,
+                device_limit: deviceLimit
+            })
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        // Log update
+        await supabaseAdmin.from('usages').insert({
+            license_id: id,
+            action: 'updated',
+            metadata: { plan, updated_by: 'admin' }
+        });
+
+        return NextResponse.json({ success: true, license });
+
+    } catch (error) {
+        console.error('Update License Error:', error);
+        return NextResponse.json(
+            { success: false, error: 'Failed to update license' },
+            { status: 500 }
+        );
+    }
+}
+
+// DELETE - Revoke license (Soft Delete / Deactivate)
 export async function DELETE(request: NextRequest) {
     if (!await verifyAdmin(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
