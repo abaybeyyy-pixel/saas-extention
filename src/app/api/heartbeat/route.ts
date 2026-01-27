@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
         }, { headers: corsHeaders });
 
     } catch (error) {
-        console.error('Heartbeat API Error:', error);
+        console.error('Heartbeat API Error:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json(
             { success: false, error: 'Internal server error' },
             { status: 500, headers: corsHeaders }

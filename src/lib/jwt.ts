@@ -1,6 +1,10 @@
 import { SignJWT, jwtVerify } from 'jose';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback_secret');
+const secret = process.env.JWT_SECRET;
+if (!secret) {
+    throw new Error('JWT_SECRET is not defined in environment variables');
+}
+const JWT_SECRET = new TextEncoder().encode(secret);
 const SESSION_EXPIRY = '15m'; // 15 minutes
 
 export interface SessionPayload {

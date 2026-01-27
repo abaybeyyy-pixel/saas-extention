@@ -51,7 +51,7 @@ export async function DELETE(request: NextRequest) {
         return NextResponse.json({ success: true });
 
     } catch (error) {
-        console.error('Delete Session Error:', error);
+        console.error('Delete Session Error:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json(
             { success: false, error: 'Failed to delete session' },
             { status: 500 }

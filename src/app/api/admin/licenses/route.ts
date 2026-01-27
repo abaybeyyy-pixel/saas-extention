@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ success: true, licenses });
     } catch (error) {
-        console.error('List Licenses Error:', error);
+        console.error('List Licenses Error:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json(
             { success: false, error: 'Failed to fetch licenses' },
             { status: 500 }
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true, license });
 
     } catch (error) {
-        console.error('Create License Error:', error);
+        console.error('Create License Error:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json(
             { success: false, error: 'Failed to create license' },
             { status: 500 }
@@ -170,7 +170,7 @@ export async function PUT(request: NextRequest) {
         return NextResponse.json({ success: true, license });
 
     } catch (error) {
-        console.error('Update License Error:', error);
+        console.error('Update License Error:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json(
             { success: false, error: 'Failed to update license' },
             { status: 500 }
@@ -238,7 +238,7 @@ export async function DELETE(request: NextRequest) {
         return NextResponse.json({ success: true });
 
     } catch (error) {
-        console.error('Delete License Error:', error);
+        console.error('Delete License Error:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json(
             { success: false, error: 'Failed to delete license' },
             { status: 500 }

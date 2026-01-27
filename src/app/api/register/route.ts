@@ -44,7 +44,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: true, message: 'Registration submitted successfully.' });
 
     } catch (error) {
-        console.error('Registration API Error:', error);
+        console.error('Registration API Error:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
     }
 }
