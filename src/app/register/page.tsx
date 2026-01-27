@@ -12,7 +12,6 @@ export default function RegisterPage() {
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
-    const [licenseKey, setLicenseKey] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,7 +28,6 @@ export default function RegisterPage() {
             const data = await res.json();
 
             if (data.success) {
-                setLicenseKey(data.licenseKey);
                 setStatus('success');
             } else {
                 setStatus('error');
@@ -61,28 +59,16 @@ export default function RegisterPage() {
                                 <CheckCircle2 size={32} />
                             </div>
                             <h3 className="text-xl font-bold text-slate-800">Pendaftaran Berhasil!</h3>
-                            <p className="text-slate-600">Trial Leadify Anda sudah aktif. Silakan salin lisensi di bawah ini:</p>
+                            <p className="text-slate-600">Terima kasih telah mendaftar. Admin kami akan memverifikasi data Anda.</p>
 
-                            <div className="bg-slate-900 p-4 rounded-xl mt-4 relative group">
-                                <div className="text-[10px] text-slate-400 uppercase font-bold mb-1">License Key Anda</div>
-                                <div className="text-white font-mono break-all text-sm">{licenseKey}</div>
-                                <button
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(licenseKey);
-                                        alert('License Key disalin!');
-                                    }}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/10 hover:bg-white/20 rounded-lg transition text-white"
-                                >
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>
-                                </button>
-                            </div>
-
-                            <div className="bg-blue-50 text-blue-700 p-4 rounded-xl text-sm mt-4 border border-blue-100 text-left">
-                                <strong className="block mb-1 text-blue-900">Cara Aktivasi:</strong>
-                                1. Buka ekstensi Leadify di Chrome.<br />
-                                2. Masukkan email <span className="font-bold">{formData.email}</span>.<br />
-                                3. Masukkan License Key di atas.<br />
-                                4. Klik tombol Aktivasi.
+                            <div className="bg-slate-50 text-slate-700 p-6 rounded-xl text-sm mt-6 border border-slate-200 text-left space-y-3">
+                                <div className="flex items-center gap-2 text-slate-900 font-bold">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                                    Langkah Selanjutnya:
+                                </div>
+                                <p>1. Admin akan melakukan pengecekan data Anda.</p>
+                                <p>2. Setelah disetujui, Kunci Lisensi (License Key) akan dikirimkan ke WhatsApp <span className="font-mono bg-white px-1 rounded border border-slate-200">{formData.whatsapp}</span>.</p>
+                                <p>3. Anda kemudian dapat mengaktifkan ekstensi menggunakan License Key tersebut.</p>
                             </div>
                             <Link href="/" className="block w-full py-3 bg-slate-900 text-white rounded-xl font-semibold mt-6 hover:bg-slate-800 transition">
                                 Kembali ke Beranda

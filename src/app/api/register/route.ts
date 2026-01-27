@@ -27,28 +27,24 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, error: 'Email already registered.' }, { status: 400 });
         }
 
-        // AUTO-ACTIVATION LOGIC:
-        // We generate a key and activate TRIAL immediately.
+        // MANUAL APPROVAL LOGIC:
+        // We insert as PENDING without a key.
         const plan: PlanType = 'TRIAL';
-        const licenseKey = generateLicenseKey();
-        const expiresAt = calculateExpiry(plan);
-        const deviceLimit = PLAN_CONFIG[plan].deviceLimit;
+        const expiresAt = calculateExpiry(plan); // Placeholder, will be reset on approval
 
-        // Insert new registration request (AUTO-ACTIVATED)
-        const { data: license, error } = await supabaseAdmin
+        // Insert new registration request (PENDING APPROVAL)
+        const { error } = await supabaseAdmin
             .from('licenses')
             .insert({
                 email: normalizedEmail,
                 whatsapp: whatsapp.trim(),
-                status: 'ACTIVE',
+                status: 'PENDING',
                 plan: plan,
                 expires_at: expiresAt.toISOString(),
-                license_key: licenseKey,
-                device_limit: deviceLimit,
-                is_active: true
-            })
-            .select()
-            .single();
+                license_key: null,
+                device_limit: PLAN_CONFIG[plan].deviceLimit,
+                is_active: false
+            });
 
         if (error) {
             console.error('Registration DB Error:', error);
@@ -57,10 +53,8 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             success: true,
-            message: 'Registration successful! Your trial is now active.',
-            licenseKey: licenseKey,
-            plan: plan,
-            expiresAt: expiresAt.toISOString()
+            message: 'Registration submitted! Please wait for admin approval.',
+            status: 'PENDING'
         });
 
     } catch (error) {
