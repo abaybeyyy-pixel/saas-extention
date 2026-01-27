@@ -7,8 +7,10 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Licenses table
 CREATE TABLE IF NOT EXISTS licenses (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  license_key VARCHAR(100) UNIQUE NOT NULL,
+  license_key VARCHAR(100) UNIQUE, -- Nullable for PENDING status
   email VARCHAR(255) NOT NULL,
+  whatsapp VARCHAR(20),
+  status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (status IN ('PENDING', 'ACTIVE', 'REVOKED', 'REJECTED')),
   plan VARCHAR(20) NOT NULL CHECK (plan IN ('TRIAL', 'PRO', 'AGENCY')),
   device_limit INT DEFAULT 1,
   expires_at TIMESTAMPTZ NOT NULL,

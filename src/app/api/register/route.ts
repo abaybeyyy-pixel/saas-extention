@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { generateLicenseKey, calculateExpiry, PLAN_CONFIG, PlanType } from '@/lib/license';
 
 export async function POST(req: Request) {
     try {
@@ -10,11 +11,13 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, error: 'Email and WhatsApp are required' }, { status: 400 });
         }
 
+        const normalizedEmail = email.trim().toLowerCase();
+
         // Check if email already exists
         const { data: existingUser } = await supabaseAdmin
             .from('licenses')
-            .select('id, status')
-            .eq('email', email)
+            .select('id, status, license_key')
+            .eq('email', normalizedEmail)
             .single();
 
         if (existingUser) {
@@ -24,24 +27,41 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, error: 'Email already registered.' }, { status: 400 });
         }
 
-        // Insert new registration request
-        const { error } = await supabaseAdmin
+        // AUTO-ACTIVATION LOGIC:
+        // We generate a key and activate TRIAL immediately.
+        const plan: PlanType = 'TRIAL';
+        const licenseKey = generateLicenseKey();
+        const expiresAt = calculateExpiry(plan);
+        const deviceLimit = PLAN_CONFIG[plan].deviceLimit;
+
+        // Insert new registration request (AUTO-ACTIVATED)
+        const { data: license, error } = await supabaseAdmin
             .from('licenses')
             .insert({
-                email,
-                whatsapp, // Ensure database schema has this column
-                status: 'PENDING',
-                plan: 'TRIAL', // Default to TRIAL until approved? Or PENDING status handles it.
-                expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // Default 30 days, can be adjusted on approval
-                license_key: null // Key generated on approval
-            });
+                email: normalizedEmail,
+                whatsapp: whatsapp.trim(),
+                status: 'ACTIVE',
+                plan: plan,
+                expires_at: expiresAt.toISOString(),
+                license_key: licenseKey,
+                device_limit: deviceLimit,
+                is_active: true
+            })
+            .select()
+            .single();
 
         if (error) {
             console.error('Registration DB Error:', error);
-            return NextResponse.json({ success: false, error: 'Database error occurred.' }, { status: 500 });
+            return NextResponse.json({ success: false, error: 'Database error occurred. Please try again later.' }, { status: 500 });
         }
 
-        return NextResponse.json({ success: true, message: 'Registration submitted successfully.' });
+        return NextResponse.json({
+            success: true,
+            message: 'Registration successful! Your trial is now active.',
+            licenseKey: licenseKey,
+            plan: plan,
+            expiresAt: expiresAt.toISOString()
+        });
 
     } catch (error) {
         console.error('Registration API Error:', error instanceof Error ? error.message : 'Unknown error');
