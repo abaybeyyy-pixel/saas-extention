@@ -26,7 +26,7 @@ export default function Home() {
           </p>
 
           <Link
-            href="/admin"
+            href="/leadifyadmin"
             className="block w-full py-3.5 px-6 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold transition-all shadow-lg shadow-slate-900/20 active:scale-[0.98]"
           >
             Access Dashboard &rarr;
