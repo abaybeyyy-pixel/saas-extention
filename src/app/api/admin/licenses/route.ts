@@ -129,14 +129,31 @@ export async function PUT(request: NextRequest) {
         // Check if we also need to extend expiry? For now lets assume "Edit" is correcting data, not extending.
         // To extend, we would need a separate "Extend" action.
 
+        // Check if we need to approve (generate key)
+        const { data: existingLicense } = await supabaseAdmin
+            .from('licenses')
+            .select('license_key, status')
+            .eq('id', id)
+            .single();
+
+        let updateData: any = {
+            email: email.trim().toLowerCase(),
+            plan,
+            device_limit: deviceLimit,
+            is_active: true
+        };
+
+        // Approval Logic: If key is missing or we are officially approving
+        if (!existingLicense?.license_key || existingLicense?.status === 'PENDING') {
+            updateData.license_key = generateLicenseKey();
+            updateData.status = 'ACTIVE';
+            updateData.starts_at = new Date().toISOString(); // Start subscription now
+            updateData.expires_at = calculateExpiry(plan as PlanType).toISOString(); // Reset expiry from now
+        }
+
         const { data: license, error } = await supabaseAdmin
             .from('licenses')
-            .update({
-                email: email.trim().toLowerCase(),
-                plan,
-                device_limit: deviceLimit,
-                is_active: true // Auto reactivate on edit
-            })
+            .update(updateData)
             .eq('id', id)
             .select()
             .single();

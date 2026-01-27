@@ -26,6 +26,8 @@ interface License {
     id: string;
     license_key: string;
     email: string;
+    whatsapp?: string; // New field
+    status?: 'PENDING' | 'ACTIVE' | 'REJECTED'; // New field
     plan: PlanType;
     device_limit: number;
     expires_at: string;
@@ -169,7 +171,8 @@ export default function AdminPage() {
     );
 
     const isExpired = (date: string) => new Date(date) < new Date();
-    const activeCount = licenses.filter(l => l.is_active && !isExpired(l.expires_at)).length;
+    const activeCount = licenses.filter(l => l.is_active && !isExpired(l.expires_at) && l.status !== 'PENDING').length;
+    const pendingCount = licenses.filter(l => l.status === 'PENDING').length;
     const sessionCount = licenses.reduce((sum, l) => sum + (l.sessions?.length || 0), 0);
 
     // LOGIN SCREEN
@@ -258,7 +261,8 @@ export default function AdminPage() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <KpiCard title="Total Licenses" value={licenses.length} icon={Users} trend="+12% this month" />
                     <KpiCard title="Active Users" value={activeCount} icon={CheckCircle2} color="text-emerald-600" bgIcon="bg-emerald-50" />
-                    <KpiCard title="Live Sessions" value={sessionCount} icon={Activity} color="text-blue-600" bgIcon="bg-blue-50" />
+                    <KpiCard title="Pending Requests" value={pendingCount} icon={Users} color="text-blue-600" bgIcon="bg-blue-50" />
+                    <KpiCard title="Live Sessions" value={sessionCount} icon={Activity} color="text-purple-600" bgIcon="bg-purple-50" />
                     <KpiCard title="Expiring Soon" value={licenses.filter(l => isExpired(l.expires_at)).length} icon={ShieldAlert} color="text-amber-500" bgIcon="bg-amber-50" />
                 </div>
 
@@ -277,26 +281,30 @@ export default function AdminPage() {
                             </thead>
                             <tbody className="divide-y divide-slate-100">
                                 {filteredLicenses.map(license => {
+                                    const isPending = license.status === 'PENDING';
                                     const expired = isExpired(license.expires_at);
                                     const active = license.is_active && !expired;
 
                                     return (
-                                        <tr key={license.id} className="group hover:bg-slate-50/60 transition-colors">
+                                        <tr key={license.id} className={`group hover:bg-slate-50/60 transition-colors ${isPending ? 'bg-blue-50/30' : ''}`}>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs uppercase">
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-slate-500 font-bold text-xs uppercase ${isPending ? 'bg-blue-100 text-blue-600' : 'bg-slate-100'}`}>
                                                         {license.email.slice(0, 2)}
                                                     </div>
                                                     <div>
                                                         <div className="font-medium text-slate-900 text-sm">{license.email}</div>
-                                                        <div className="flex items-center gap-1.5 mt-0.5">
-                                                            <code className="text-[10px] text-slate-400 font-mono bg-slate-100 px-1.5 py-0.5 rounded">
-                                                                {license.license_key.slice(0, 16)}...
-                                                            </code>
-                                                            <button onClick={() => copyToClipboard(license.license_key)} className="text-slate-300 hover:text-blue-500 transition">
-                                                                <Copy size={12} />
-                                                            </button>
-                                                        </div>
+                                                        {license.whatsapp && <div className="text-[10px] text-slate-500 flex items-center gap-1"><span className="text-green-600">WA:</span> {license.whatsapp}</div>}
+                                                        {license.license_key && (
+                                                            <div className="flex items-center gap-1.5 mt-0.5">
+                                                                <code className="text-[10px] text-slate-400 font-mono bg-slate-100 px-1.5 py-0.5 rounded">
+                                                                    {license.license_key.slice(0, 16)}...
+                                                                </code>
+                                                                <button onClick={() => copyToClipboard(license.license_key)} className="text-slate-300 hover:text-blue-500 transition">
+                                                                    <Copy size={12} />
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </td>
@@ -312,7 +320,11 @@ export default function AdminPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                {active ? (
+                                                {isPending ? (
+                                                    <div className="flex items-center gap-1.5 text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full w-fit border border-blue-100 animate-pulse">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div> Pending
+                                                    </div>
+                                                ) : active ? (
                                                     <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full w-fit border border-emerald-100">
                                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Active
                                                     </div>
@@ -348,18 +360,50 @@ export default function AdminPage() {
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <button
-                                                        onClick={() => {
-                                                            setEditingLicense(license);
-                                                            setFormData({ email: license.email, plan: license.plan });
-                                                            setShowModal(true);
-                                                        }}
-                                                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                                                        title="Edit User"
-                                                    >
-                                                        <Edit2 size={16} />
-                                                    </button>
-                                                    {active ? (
+                                                    {isPending ? (
+                                                        <button
+                                                            onClick={async () => {
+                                                                // Approve logic here: Generate key and set active
+                                                                // For now we open modal to confirm/edit before saving which triggers key gen on backend
+                                                                setEditingLicense(license);
+                                                                setFormData({ email: license.email, plan: license.plan });
+                                                                setShowModal(true);
+                                                                // Backend should handle key generation if missing when saving
+                                                            }}
+                                                            className="px-3 py-1.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-xs font-medium transition shadow-sm shadow-blue-200"
+                                                        >
+                                                            Approve
+                                                        </button>
+                                                    ) : (
+                                                        <>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setEditingLicense(license);
+                                                                    setFormData({ email: license.email, plan: license.plan });
+                                                                    setShowModal(true);
+                                                                }}
+                                                                className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                                                title="Edit User"
+                                                            >
+                                                                <Edit2 size={16} />
+                                                            </button>
+                                                            {license.whatsapp && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        const msg = `Halo! Berikut adalah License Key Leadify Anda:\n\nKey: ${license.license_key}\nEmail: ${license.email}\nPlan: ${license.plan}\n\nTerima kasih telah bergabung!`;
+                                                                        const url = `https://wa.me/${(license.whatsapp || '').replace(/^0/, '62').replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`;
+                                                                        window.open(url, '_blank');
+                                                                    }}
+                                                                    className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
+                                                                    title="Send Key via WhatsApp"
+                                                                >
+                                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                                                                </button>
+                                                            )}
+                                                        </>
+                                                    )}
+
+                                                    {active && !isPending ? (
                                                         <button
                                                             onClick={() => handleRevoke(license.id, license.email)}
                                                             className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition"
