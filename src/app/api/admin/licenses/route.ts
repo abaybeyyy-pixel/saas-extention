@@ -143,16 +143,22 @@ export async function PUT(request: NextRequest) {
             is_active: true
         };
 
-        // Automatic Extension Logic on Upgrade
-        // Hierarchy: TRIAL (1) < PRO (2) < AGENCY (3)
+        // Automatic Extension Logic
+        // We extend if:
+        // 1. Plan is upgraded (Hierarchy: TRIAL < PRO < AGENCY)
+        // 2. Setting/Keeping as PRO or AGENCY (likely a renewal or new activation)
+        // 3. Plan is changed to anything new
         const planHierarchy: Record<string, number> = { 'TRIAL': 1, 'PRO': 2, 'AGENCY': 3 };
-        const oldPlanLevel = planHierarchy[existingLicense?.plan || 'TRIAL'] || 1;
+        const oldPlan = existingLicense?.plan || 'TRIAL';
+        const oldPlanLevel = planHierarchy[oldPlan] || 1;
         const newPlanLevel = planHierarchy[plan] || 1;
 
         const isUpgrade = newPlanLevel > oldPlanLevel;
+        const isPaidPlan = plan === 'PRO' || plan === 'AGENCY';
+        const planChanged = plan !== oldPlan;
 
-        if (isUpgrade) {
-            console.log(`Plan upgrade detected: ${existingLicense?.plan} -> ${plan}. Extending 30 days.`);
+        if (isUpgrade || isPaidPlan || planChanged) {
+            console.log(`[License Update] Extending expiry. Reason: ${isUpgrade ? 'Upgrade' : (isPaidPlan ? 'Paid Plan' : 'Plan Change')}. Old: ${oldPlan}, New: ${plan}`);
             updateData.expires_at = calculateExpiry(plan as PlanType).toISOString();
         }
 
