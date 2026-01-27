@@ -21,42 +21,23 @@ export default function Home() {
         </div>
 
         {/* Action Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-          {/* Admin Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl shadow-slate-200/50 flex flex-col justify-between hover:border-slate-300 transition-all group">
-            <div>
-              <div className="p-3 bg-slate-50 rounded-xl w-fit mb-4 text-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-colors">
-                <Shield size={24} />
-              </div>
-              <h3 className="font-bold text-lg text-slate-900 mb-2">Administrator</h3>
-              <p className="text-slate-500 text-sm mb-6">
-                Access the license management dashboard and system settings.
-              </p>
-            </div>
-            <Link
-              href="/leadifyadmin"
-              className="block w-full py-3 text-center bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold transition-all shadow-lg shadow-slate-900/10 active:scale-[0.98]"
-            >
-              Admin Login
-            </Link>
-          </div>
-
+        <div className="flex justify-center w-full">
           {/* User Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl shadow-slate-200/50 flex flex-col justify-between hover:border-slate-300 transition-all group">
-            <div>
-              <div className="p-3 bg-slate-50 rounded-xl w-fit mb-4 text-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-colors">
-                <UserPlus size={24} />
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-2xl shadow-slate-200/50 flex flex-col items-center justify-between hover:border-slate-900 transition-all group max-w-sm w-full">
+            <div className="text-center">
+              <div className="p-4 bg-slate-50 rounded-2xl w-fit mx-auto mb-6 text-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-all transform group-hover:scale-110">
+                <UserPlus size={32} />
               </div>
-              <h3 className="font-bold text-lg text-slate-900 mb-2">New User</h3>
-              <p className="text-slate-500 text-sm mb-6">
-                Register for a new account and get your license key via WhatsApp.
+              <h3 className="font-bold text-xl text-slate-900 mb-3">Daftar Leadify</h3>
+              <p className="text-slate-500 text-sm mb-8 leading-relaxed">
+                Daftar sekarang untuk mendapatkan akses Leadify Pro dan dapatkan License Key melalui WhatsApp.
               </p>
             </div>
             <Link
               href="/register"
-              className="block w-full py-3 text-center bg-white border-2 border-slate-200 hover:border-slate-900 hover:text-slate-900 text-slate-700 rounded-xl font-semibold transition-all active:scale-[0.98]"
+              className="w-full py-4 text-center bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold transition-all shadow-xl shadow-slate-900/20 active:scale-[0.98]"
             >
-              Sign Up Now
+              Mulai Sekarang
             </Link>
           </div>
         </div>
