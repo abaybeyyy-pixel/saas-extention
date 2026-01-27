@@ -184,7 +184,7 @@ export default function AdminPage() {
                 <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl opacity-50 animate-pulse"></div>
                 <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl opacity-50 animate-pulse delay-700"></div>
 
-                <div className="bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl shadow-black/50 border border-white/10 relative z-10 ring-1 ring-white/20">
+                <div className="bg-white p-8 rounded-3xl shadow-2xl shadow-black/50 border border-white/10 relative z-10 ring-1 ring-white/20">
                     <div className="flex justify-center mb-8">
                         <img src="/logo.png" alt="Leadify Admin" className="h-10 w-auto" />
                     </div>
