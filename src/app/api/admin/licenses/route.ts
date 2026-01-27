@@ -132,7 +132,7 @@ export async function PUT(request: NextRequest) {
         // Check if we need to approve (generate key)
         const { data: existingLicense } = await supabaseAdmin
             .from('licenses')
-            .select('license_key, status')
+            .select('license_key, status, plan, expires_at')
             .eq('id', id)
             .single();
 
@@ -142,6 +142,19 @@ export async function PUT(request: NextRequest) {
             device_limit: deviceLimit,
             is_active: true
         };
+
+        // Automatic Extension Logic on Upgrade
+        // Hierarchy: TRIAL (1) < PRO (2) < AGENCY (3)
+        const planHierarchy: Record<string, number> = { 'TRIAL': 1, 'PRO': 2, 'AGENCY': 3 };
+        const oldPlanLevel = planHierarchy[existingLicense?.plan || 'TRIAL'] || 1;
+        const newPlanLevel = planHierarchy[plan] || 1;
+
+        const isUpgrade = newPlanLevel > oldPlanLevel;
+
+        if (isUpgrade) {
+            console.log(`Plan upgrade detected: ${existingLicense?.plan} -> ${plan}. Extending 30 days.`);
+            updateData.expires_at = calculateExpiry(plan as PlanType).toISOString();
+        }
 
         // Approval Logic: If key is missing or we are officially approving
         if (!existingLicense?.license_key || existingLicense?.status === 'PENDING') {

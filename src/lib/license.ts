@@ -16,7 +16,7 @@ export const PLAN_CONFIG = {
     },
     AGENCY: {
         name: 'Agency',
-        duration: 365, // 1 year
+        duration: 30, // 30 days
         deviceLimit: 3,
         price: 799000
     }
