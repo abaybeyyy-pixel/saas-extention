@@ -179,10 +179,8 @@ export default function AdminPage() {
     if (!isAuthenticated) return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 text-slate-900">
             <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm border border-slate-100">
-                <div className="flex justify-center mb-6">
-                    <div className="p-3 bg-slate-900 rounded-xl text-white">
-                        <Ghost size={32} />
-                    </div>
+                <div className="flex justify-center mb-8">
+                    <img src="/logo.png" alt="Leadify Admin" className="h-12 w-auto" />
                 </div>
                 <h1 className="text-xl font-bold text-center mb-1">Admin Portal</h1>
                 <p className="text-slate-500 text-center text-sm mb-6">Secure access only</p>
