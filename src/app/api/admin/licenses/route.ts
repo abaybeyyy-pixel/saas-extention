@@ -147,7 +147,6 @@ export async function PUT(request: NextRequest) {
         if (!existingLicense?.license_key || existingLicense?.status === 'PENDING') {
             updateData.license_key = generateLicenseKey();
             updateData.status = 'ACTIVE';
-            updateData.starts_at = new Date().toISOString(); // Start subscription now
             updateData.expires_at = calculateExpiry(plan as PlanType).toISOString(); // Reset expiry from now
         }
 
