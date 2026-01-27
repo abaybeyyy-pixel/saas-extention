@@ -19,7 +19,8 @@ import {
     Globe,
     MoreHorizontal,
     Copy,
-    LayoutDashboard
+    LayoutDashboard,
+    Lock
 } from 'lucide-react';
 
 interface License {
@@ -177,27 +178,71 @@ export default function AdminPage() {
 
     // LOGIN SCREEN
     if (!isAuthenticated) return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 text-slate-900">
-            <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm border border-slate-100">
-                <div className="flex justify-center mb-8">
-                    <img src="/logo.png" alt="Leadify Admin" className="h-12 w-auto" />
+        <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black flex items-center justify-center p-4">
+            <div className="w-full max-w-sm relative">
+                {/* Background glow effect */}
+                <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl opacity-50 animate-pulse"></div>
+                <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl opacity-50 animate-pulse delay-700"></div>
+
+                <div className="bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl shadow-black/50 border border-white/10 relative z-10 ring-1 ring-white/20">
+                    <div className="flex justify-center mb-8">
+                        <img src="/logo.png" alt="Leadify Admin" className="h-10 w-auto" />
+                    </div>
+
+                    <div className="text-center mb-8">
+                        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Admin Portal</h1>
+                        <p className="text-slate-500 text-sm mt-1 flex items-center justify-center gap-1.5">
+                            <ShieldAlert size={14} className="text-emerald-500" />
+                            Secure Access Only
+                        </p>
+                    </div>
+
+                    <form onSubmit={handleLogin} className="space-y-5">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-semibold uppercase text-slate-500 ml-1">Access Key</label>
+                            <div className="relative group">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors">
+                                    <Lock size={18} />
+                                </div>
+                                <input
+                                    type="password"
+                                    value={secret}
+                                    onChange={e => setSecret(e.target.value)}
+                                    placeholder="Enter your secret key"
+                                    required
+                                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none transition-all placeholder:text-slate-400 font-medium text-slate-900"
+                                />
+                            </div>
+                        </div>
+
+                        {error && (
+                            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2 border border-red-100 animate-in fade-in slide-in-from-top-1">
+                                <ShieldAlert size={16} />
+                                {error}
+                            </div>
+                        )}
+
+                        <button
+                            disabled={loading}
+                            className="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {loading ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Verifying...
+                                </>
+                            ) : (
+                                'Access Dashboard'
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="mt-8 text-center">
+                        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wide">
+                            &copy; 2026 Leadify System v2.0
+                        </p>
+                    </div>
                 </div>
-                <h1 className="text-xl font-bold text-center mb-1">Admin Portal</h1>
-                <p className="text-slate-500 text-center text-sm mb-6">Secure access only</p>
-                <form onSubmit={handleLogin} className="space-y-4">
-                    <input
-                        type="password"
-                        value={secret}
-                        onChange={e => setSecret(e.target.value)}
-                        placeholder="Secret Key"
-                        required
-                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:outline-none"
-                    />
-                    {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-                    <button disabled={loading} className="w-full py-3 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition">
-                        {loading ? 'Verifying...' : 'Enter Dashboard'}
-                    </button>
-                </form>
             </div>
         </div>
     );
