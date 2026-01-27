@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { UserPlus, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -44,7 +45,7 @@ export default function RegisterPage() {
                 {/* Header */}
                 <div className="bg-slate-900 p-8 text-white text-center">
                     <div className="mb-4 inline-flex p-3 bg-white/10 rounded-xl backdrop-blur-sm">
-                        <span className="text-3xl">🚀</span>
+                        <UserPlus size={32} />
                     </div>
                     <h1 className="text-2xl font-bold">Join Leadify</h1>
                     <p className="text-slate-300 mt-2 text-sm">Daftar sekarang untuk akses Leadify Pro</p>
@@ -54,14 +55,14 @@ export default function RegisterPage() {
                 <div className="p-8">
                     {status === 'success' ? (
                         <div className="text-center space-y-4 animate-in fade-in zoom-in duration-300">
-                            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                            <div className="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-100">
+                                <CheckCircle2 size={32} />
                             </div>
                             <h3 className="text-xl font-bold text-slate-800">Pendaftaran Berhasil!</h3>
                             <p className="text-slate-600">Terima kasih telah mendaftar. Admin kami akan memverifikasi data Anda.</p>
-                            <div className="bg-blue-50 text-blue-800 p-4 rounded-xl text-sm mt-4 border border-blue-100">
-                                <strong>Apa selanjutnya?</strong><br />
-                                Kunci lisensi (License Key) akan dikirimkan langsung ke WhatsApp Anda (`{formData.whatsapp}`) setelah disetujui.
+                            <div className="bg-slate-50 text-slate-700 p-4 rounded-xl text-sm mt-4 border border-slate-200 text-left">
+                                <strong className="block mb-1 text-slate-900">Apa selanjutnya?</strong>
+                                Kunci lisensi (License Key) akan dikirimkan langsung ke WhatsApp Anda (<span className="font-mono bg-white px-1 rounded border border-slate-200">{formData.whatsapp}</span>) setelah disetujui.
                             </div>
                             <Link href="/" className="block w-full py-3 bg-slate-900 text-white rounded-xl font-semibold mt-6 hover:bg-slate-800 transition">
                                 Kembali ke Beranda
@@ -74,7 +75,7 @@ export default function RegisterPage() {
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400"
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400"
                                     placeholder="Contoh: Budi Santoso"
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
@@ -86,7 +87,7 @@ export default function RegisterPage() {
                                 <input
                                     type="email"
                                     required
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400"
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400"
                                     placeholder="nama@email.com"
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
@@ -100,7 +101,7 @@ export default function RegisterPage() {
                                     <input
                                         type="tel"
                                         required
-                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400"
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400"
                                         placeholder="081234567890"
                                         value={formData.whatsapp}
                                         onChange={e => {
@@ -114,8 +115,8 @@ export default function RegisterPage() {
                             </div>
 
                             {status === 'error' && (
-                                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>
+                                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2 border border-red-100">
+                                    <AlertCircle size={16} />
                                     {errorMessage}
                                 </div>
                             )}
@@ -123,11 +124,11 @@ export default function RegisterPage() {
                             <button
                                 type="submit"
                                 disabled={status === 'loading'}
-                                className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {status === 'loading' ? (
                                     <>
-                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        <Loader2 size={16} className="animate-spin" />
                                         Memproses...
                                     </>
                                 ) : (
