@@ -1,7 +1,6 @@
 
 import { NextResponse } from 'next/server';
-// @ts-ignore
-import { supabase } from '@/lib/db'; // Make sure this path is correct for your project structure
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(req: Request) {
     try {
@@ -13,7 +12,7 @@ export async function POST(req: Request) {
         }
 
         // Check if email already exists
-        const { data: existingUser } = await supabase
+        const { data: existingUser } = await supabaseAdmin
             .from('licenses')
             .select('id, status')
             .eq('email', email)
@@ -27,7 +26,7 @@ export async function POST(req: Request) {
         }
 
         // Insert new registration request
-        const { error } = await supabase
+        const { error } = await supabaseAdmin
             .from('licenses')
             .insert({
                 email,
