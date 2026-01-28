@@ -44,8 +44,8 @@ export default function RegisterPage() {
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100">
                 {/* Header */}
                 <div className="bg-slate-900 p-8 text-white text-center">
-                    <div className="mb-4 inline-flex p-3 bg-white rounded-xl shadow-lg text-slate-900">
-                        <img src="/logo.png" alt="Leadify" className="h-10 w-auto" />
+                    <div className="mb-4 inline-flex p-3 bg-white rounded-xl shadow-lg text-slate-900 font-bold text-2xl tracking-tighter font-outfit">
+                        Leadify.id
                     </div>
                     <h1 className="text-2xl font-bold">Join Leadify</h1>
                     <p className="text-slate-300 mt-2 text-sm">Daftar sekarang untuk akses Leadify Pro</p>

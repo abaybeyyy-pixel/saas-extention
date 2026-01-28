@@ -186,7 +186,7 @@ export default function AdminPage() {
 
                 <div className="bg-white p-8 rounded-3xl shadow-2xl shadow-black/50 border border-white/10 relative z-10 ring-1 ring-white/20">
                     <div className="flex justify-center mb-8">
-                        <img src="/logo.png" alt="Leadify Admin" className="h-10 w-auto" />
+                        <span className="text-3xl font-black text-slate-900 tracking-tighter font-outfit">Leadify.id</span>
                     </div>
 
                     <div className="text-center mb-8">
@@ -257,7 +257,7 @@ export default function AdminPage() {
                         <div className="p-1.5 bg-slate-900 rounded-lg text-white">
                             <LayoutDashboard size={20} />
                         </div>
-                        <span className="font-bold text-lg tracking-tight">Leadify Admin</span>
+                        <span className="font-bold text-lg tracking-tighter font-outfit">Leadify.id Admin</span>
                     </div>
                     <div className="flex items-center gap-4">
                         <span className="text-xs font-semibold px-2 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 flex items-center gap-1">
