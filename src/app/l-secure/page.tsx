@@ -359,7 +359,7 @@ export default function AdminPage() {
                                                     {license.plan}
                                                 </span>
                                                 <div className="text-[10px] text-slate-400 mt-1">
-                                                    Expires {new Date(license.expires_at).toLocaleDateString()}
+                                                    {license.plan === 'PRO' ? 'Lifetime' : `Expires ${new Date(license.expires_at).toLocaleDateString()}`}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
@@ -521,7 +521,9 @@ export default function AdminPage() {
                                         >
                                             <div>
                                                 <div className={`font-semibold text-sm ${formData.plan === key ? 'text-blue-700' : 'text-slate-700'}`}>{config.name}</div>
-                                                <div className="text-xs text-slate-500">{config.duration} Days • {config.deviceLimit} Device</div>
+                                                <div className="text-xs text-slate-500">
+                                                    {key === 'PRO' ? 'Lifetime' : `${config.duration} Days`} • {config.deviceLimit} Device
+                                                </div>
                                             </div>
                                             {formData.plan === key && <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center"><CheckCircle2 size={10} color="white" /></div>}
                                         </div>

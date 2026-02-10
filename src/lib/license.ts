@@ -4,13 +4,13 @@ import { nanoid } from 'nanoid';
 export const PLAN_CONFIG = {
     TRIAL: {
         name: 'Trial',
-        duration: 7, // 7 days trial
+        duration: 3, // 3 days trial
         deviceLimit: 1,
         price: 0
     },
     PRO: {
         name: 'Pro',
-        duration: 30, // 30 days
+        duration: 36500, // 100 years = Lifetime
         deviceLimit: 1,
         price: 99000
     },
