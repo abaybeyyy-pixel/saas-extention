@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { generateLicenseKey, calculateExpiry, PLAN_CONFIG, PlanType } from '@/lib/license';
+import { calculateExpiry, PLAN_CONFIG, PlanType } from '@/lib/license';
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { email, whatsapp, name } = body;
+        const { email, whatsapp } = body;
 
         if (!email || !whatsapp) {
             return NextResponse.json({ success: false, error: 'Email and WhatsApp are required' }, { status: 400 });

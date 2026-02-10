@@ -3,21 +3,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { PLAN_CONFIG, PlanType } from '@/lib/license';
 import {
-    CreditCard,
     Users,
     Activity,
     LogOut,
-    Ghost,
     Search,
     Plus,
     Trash2,
     Edit2,
-    RefreshCcw,
     Monitor,
     ShieldAlert,
     CheckCircle2,
-    Globe,
-    MoreHorizontal,
     Copy,
     LayoutDashboard,
     Lock

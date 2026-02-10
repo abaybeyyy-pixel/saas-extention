@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Lock, Shield, UserPlus } from 'lucide-react';
+import { Lock, UserPlus } from 'lucide-react';
 
 export default function Home() {
   return (

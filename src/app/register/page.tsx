@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { UserPlus, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -33,7 +33,7 @@ export default function RegisterPage() {
                 setStatus('error');
                 setErrorMessage(data.error || 'Registration failed');
             }
-        } catch (err) {
+        } catch (_err) {
             setStatus('error');
             setErrorMessage('Connection error. Please try again.');
         }
