@@ -547,7 +547,16 @@ export default function AdminPage() {
     );
 }
 
-function KpiCard({ title, value, icon: Icon, trend, color = 'text-slate-900', bgIcon = 'bg-slate-100' }: any) {
+interface KpiCardProps {
+    title: string;
+    value: string | number;
+    icon: React.ElementType;
+    trend?: string;
+    color?: string;
+    bgIcon?: string;
+}
+
+function KpiCard({ title, value, icon: Icon, trend, color = 'text-slate-900', bgIcon = 'bg-slate-100' }: KpiCardProps) {
     return (
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
             <div>

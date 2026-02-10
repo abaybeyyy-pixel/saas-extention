@@ -1,0 +1,8 @@
+﻿
+C:\saputrastudio\app\leadifyextention\saas-extention\src\app\api\admin\licenses\route.ts
+  139:13  error  'updateData' is never reassigned. Use 'const' instead  prefer-const
+  139:25  error  Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+
+Γ£û 2 problems (2 errors, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

@@ -136,7 +136,17 @@ export async function PUT(request: NextRequest) {
             .eq('id', id)
             .single();
 
-        let updateData: any = {
+        type LicenseUpdate = {
+            email: string;
+            plan: string;
+            device_limit: number;
+            is_active: boolean;
+            expires_at?: string;
+            license_key?: string;
+            status?: string;
+        };
+
+        const updateData: LicenseUpdate = {
             email: email.trim().toLowerCase(),
             plan,
             device_limit: deviceLimit,
